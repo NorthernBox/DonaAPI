@@ -1,0 +1,109 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id       String   @id @default(cuid())
+  name     String
+  email String @unique
+  phone String @unique
+  description String
+  createdAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+
+  users User[]
+
+  Donation Donation[]
+}
+
+model User {
+  id          String   @id @default(uuid())
+  name        String
+  email       String   @unique
+  phone       String   @unique
+  password    String
+  orgId       String
+  organization Organization @relation(fields: [orgId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Donor {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  phone        String   @unique
+  address      String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  donation Donation[]
+}
+
+model Donation {
+  id             String   @id @default(uuid())
+  amount         Float?
+  status         String
+  donationType  String
+  donationMethod String
+  description   String
+  donationDate  DateTime @default(now())
+  internalControl Boolean
+  purpose String
+  donorId        String?
+  donor          Donor?   @relation(fields: [donorId], references: [id])
+  organizationId String?
+  organization    Organization? @relation(fields: [organizationId], references: [id])
+  recipientId    String?
+  recipient      Recipient? @relation(fields: [recipientId], references: [id])
+}
+
+model Recipient {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  phone        String   @unique
+  address      String
+  category     String
+  childrenHome Boolean @default(false)
+  dependants String?
+  dependantsAgeRange String?
+  specialNeeds Boolean?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  donation Donation[]
+}
+
+model Events {
+  id          String   @id @default(uuid())
+  title       String
+  theme String
+  type String
+  description String
+  venue    String
+  link String?
+  deadLine DateTime
+  imgUrl String
+  speakers String[]
+  targetAudience String
+  entryFee Boolean
+  entryFeeAmount Float?
+  startDate    DateTime
+  endDate      DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  organizationId String
+}
