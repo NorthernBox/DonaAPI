@@ -1,7 +1,16 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { OrganizationsService } from './organizations.service';
 import { CreateOrgDto } from './dto/createOrg.dto';
 import { UpdateOrgDto } from './dto/updateOrg.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('organizations')
 export class OrganizationsController {
@@ -13,6 +22,7 @@ export class OrganizationsController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   getAllOrganizations() {
     return this.organizationsService.getAllOrganizations();
   }
