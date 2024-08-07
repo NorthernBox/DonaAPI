@@ -2,16 +2,21 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateOrgDto } from './dto/createOrg.dto';
 import { UpdateOrgDto } from './dto/updateOrg.dto';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class OrganizationsService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private mailService: MailService,
+  ) {}
 
   async createOrganization(createOrgDto: CreateOrgDto) {
     console.log(createOrgDto);
     const newOrg = await this.prismaService.organization.create({
       data: createOrgDto,
     });
+    await this.mailService.sendOrgRegistration(newOrg.email, 'Hello World');
     return {
       message: 'Organization created Successfully',
       data: newOrg,
